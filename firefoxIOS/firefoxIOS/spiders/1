@@ -1,0 +1,27 @@
+#!/usr/bin/python2.7.6
+# -*- coding: utf-8 -*-
+
+
+import scrapy
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+class EclipseSpider(scrapy.Spider):
+    name = "firefoxIOS"
+    allowed_domains = ["bugzilla.mozilla.org"]
+    start_urls = ["https://bugzilla.mozilla.org/buglist.cgi?product=Firefox%20for%20iOS&query_format=advanced&resolution=---&resolution=FIXED&resolution=INVALID&resolution=WONTFIX&resolution=DUPLICATE&resolution=WORKSFORME&resolution=INCOMPLETE&resolution=SUPPORT&resolution=EXPIRED&resolution=MOVED&order=bug_status%2Cpriority%2Cbug_severity&limit=0"]
+
+    def parse(self, response):
+        page = response.url.split("?")[-1]
+        filename = 'eclipse_3.txt'
+        with open(filename, 'a') as of:
+            of.write(page)
+            of.write('^:')
+            for comment in response.xpath('//pre[@class="bz_comment_text"]'):
+                of.write(str(comment.xpath('./text()').extract()))
+                #of.write(str(response.xpath('//pre[@class="bz_comment_text"]/text()').extract()))
+            of.write('\n')
+
+
+        
